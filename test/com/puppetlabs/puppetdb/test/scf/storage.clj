@@ -478,10 +478,11 @@
 
 ;; Report tests
 
-(let [timestamp     (now)
-      report        (:basic reports)
-      report-hash   (report-identity-string report)
-      certname      (:certname report)]
+(let [timestamp          (now)
+      report             (:basic reports)
+      report-hash        (report-identity-string report)
+      certname           (:certname report)
+      report-with-status (:with-status reports)]
 
   (deftest report-dedupe
     (testing "Reports with the same metadata but different events should have different hashes"
@@ -508,7 +509,14 @@
             [{:certname (:certname report)}]))
 
       (is (= (query-to-vec ["SELECT hash FROM reports"])
-            [{:hash report-hash}]))))
+             [{:hash report-hash}]))))
+
+  (deftest report-status-storage
+    (testing "should store report status"
+      (store-report! report-with-status timestamp)
+
+      (is (= (query-to-vec ["SELECT status FROM reports"])
+             [{:status (:status report-with-status)}]))))
 
   (deftest report-cleanup
     (testing "should delete reports older than the specified age"

@@ -710,7 +710,7 @@ must be supplied as the value to be matched."
   configuration version, timestamps, events).
   "
   [{:keys [certname puppet-version report-format configuration-version
-           start-time end-time resource-events] :as report}]
+           start-time end-time status resource-events] :as report}]
   (-> (sorted-map)
     (assoc :certname certname)
     (assoc :puppet-version puppet-version)
@@ -718,6 +718,7 @@ must be supplied as the value to be matched."
     (assoc :configuration-version configuration-version)
     (assoc :start-time start-time)
     (assoc :end-time end-time)
+    (assoc :status status)
     (assoc :resource-events (sort (map resource-event-identity-string resource-events)))
     (pr-str)
     (utils/utf8-string->sha1)))
@@ -725,7 +726,7 @@ must be supplied as the value to be matched."
 (defn add-report!
   "Add a report and all of the associated events to the database."
   [{:keys [puppet-version certname report-format configuration-version
-           start-time end-time resource-events]
+           start-time end-time resource-events status]
     :as report}
    timestamp]
   {:pre [(map? report)
@@ -750,7 +751,8 @@ must be supplied as the value to be matched."
             :configuration_version  configuration-version
             :start_time             (to-timestamp start-time)
             :end_time               (to-timestamp end-time)
-            :receive_time           (to-timestamp timestamp)})
+            :receive_time           (to-timestamp timestamp)
+            :status                 status})
         (apply sql/insert-records :resource_events resource-event-rows)))))
 
 (defn delete-reports-older-than!
