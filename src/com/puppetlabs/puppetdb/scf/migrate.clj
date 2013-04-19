@@ -296,19 +296,25 @@
   (sql/do-commands
     "CREATE INDEX idx_resource_events_timestamp ON resource_events(timestamp)"))
 
+(defn add-report-status
+  "Add a column to the reports table to store the status of the Puppet run."
+  []
+  (sql/do-commands
+   "ALTER TABLE reports ADD status VARCHAR(40)"))
 
 ;; The available migrations, as a map from migration version to migration
 ;; function.
 (def migrations
-  {1 initialize-store
-   2 allow-node-deactivation
-   3 add-catalog-timestamps
-   4 add-certname-facts-metadata-table
-   5 add-missing-indexes
-   6 drop-old-tags-index
-   7 drop-classes-and-tags
-   8 rename-fact-column
-   9 add-reports-tables})
+  {1  initialize-store
+   2  allow-node-deactivation
+   3  add-catalog-timestamps
+   4  add-certname-facts-metadata-table
+   5  add-missing-indexes
+   6  drop-old-tags-index
+   7  drop-classes-and-tags
+   8  rename-fact-column
+   9  add-reports-tables
+   10 add-report-status})
 
 (def desired-schema-version (apply max (keys migrations)))
 
