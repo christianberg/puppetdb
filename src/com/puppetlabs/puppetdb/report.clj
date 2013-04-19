@@ -17,6 +17,8 @@
    :configuration-version    :string
    :start-time               :datetime
    :end-time                 :datetime
+   :status                   { :optional? true
+                               :type      :string }
    :resource-events          :coll})
 
 (defmodel ResourceEvent

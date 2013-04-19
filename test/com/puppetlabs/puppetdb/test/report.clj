@@ -6,7 +6,8 @@
   (:require [com.puppetlabs.utils :as utils]
             [cheshire.core :as json]))
 
-(let [report (:basic reports)]
+(let [report             (:basic reports)
+      report-with-status (:with-status reports)]
 
   (deftest test-validate!
     (testing "should accept a valid report"
@@ -20,5 +21,8 @@
     (testing "should fail when a resource event has the wrong data type for a key"
       (is (thrown-with-msg?
             IllegalArgumentException #":timestamp should be Datetime"
-            (validate! (assoc-in report [:resource-events 0 :timestamp] "foo")))))))
+            (validate! (assoc-in report [:resource-events 0 :timestamp] "foo")))))
+
+    (testing "should accept a valid report with status field"
+      (is (= report-with-status (validate! report-with-status))))))
 
